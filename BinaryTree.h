@@ -33,7 +33,7 @@ struct TreeNode
 	*	\brief Creates a tree node with the given id
 	*	\param id The ID the node will have.
 	*/
-	TreeNode(const int &id) {
+	TreeNode(const unsigned long long &id) {
 		this->id = id;
 		left = nullptr;
 		right = nullptr;
@@ -78,7 +78,7 @@ struct TreeNode
 	*	\return A pointer to the found node. Nullptr if the node wasn't found.
 	*/
 
-	TreeNode<T> * Search(const int &id) {
+	TreeNode<T> * Search(const unsigned long long &id) {
 		if (this->id == id) {
 			return this;
 		}
@@ -134,7 +134,7 @@ struct TreeNode
 	*	\return A pointer to the removed node. Nullptr if the node wasn't removed.
 	*/
 
-	TreeNode<T> * Remove(const int &id, TreeNode<T> *parent) {
+	TreeNode<T> * Remove(const unsigned long long &id, TreeNode<T> *parent) {
 		if (id < this->id) {
 			if (left != nullptr) {
 				return left->Remove(id, this);
