@@ -12,25 +12,43 @@
 *  Structs for creating binary search trees.
 */
 
+/**
+*	\struct TreeNode
+*	\brief Describes a node on the tree.
+*/
+
 template <typename T>
 struct TreeNode
 {
-
+	/**
+	*	\brief Defualt constructor
+	*
+	*/
 	TreeNode() {
 		left = nullptr;
 		right = nullptr;
 	}
 
+	/**
+	*	\brief Creates a tree node with the given id
+	*	\param id The ID the node will have.
+	*/
 	TreeNode(const int &id) {
 		this->id = id;
 		left = nullptr;
 		right = nullptr;
 	}
 
-	unsigned long long id;
-	T val;
-	TreeNode * left;
-	TreeNode * right;
+	unsigned long long id; 	//! The ID of the node.
+	T val;									//! Data the node has of type T
+	TreeNode * left;				//! Node with an ID less than the parent node.
+	TreeNode * right;				//! Node with an ID greater than the parent node.
+
+	/**
+	*	\brief Adds a node to the tree.
+	*	\param n The TreeNode to add to the tree.
+	*	\return True if tree node was added to the tree.
+	*/
 
 	bool AddNode(TreeNode<T> * n) {
 		if (n->id < id) {
@@ -54,6 +72,12 @@ struct TreeNode
 		return false;
 	}
 
+	/**
+	*	\brief Finds a node with the given ID.
+	*	\param id The id to find.
+	*	\return A pointer to the found node. Nullptr if the node wasn't found.
+	*/
+
 	TreeNode<T> * Search(const int &id) {
 		if (this->id == id) {
 			return this;
@@ -68,6 +92,10 @@ struct TreeNode
 		return nullptr;
 	}
 
+	/**
+	*	\brief Vists the nodes joined to this node.
+	*/
+
 	void Vist() {
 		if (left != nullptr) {
 			left->Vist();
@@ -76,6 +104,10 @@ struct TreeNode
 			right->Vist();
 		}
 	}
+
+	/**
+	*	\brief Deletes all the pointers.
+	*/
 
 	void Clean() {
 		if (left != nullptr) {
@@ -94,6 +126,13 @@ struct TreeNode
 			right = nullptr;
 		}
 	}
+
+	/**
+	*	\brief Removes a node from the tree.
+	*	\param id The ID of the node to remove.
+	*	\param parent Which node this node is connected too.
+	*	\return A pointer to the removed node. Nullptr if the node wasn't removed.
+	*/
 
 	TreeNode<T> * Remove(const int &id, TreeNode<T> *parent) {
 		if (id < this->id) {
@@ -129,29 +168,43 @@ struct TreeNode
 		return false;
 	}
 
+	/**
+	*	\brief Finds the lowest ID
+	*	\return The lowest ID as an unsigned long long.
+	*/
+
 	unsigned long long MinValue() {
-
 		if (left == nullptr)
-
 			return id;
-
 		else
-
 			return left->MinValue();
-
 	}
-
 };
 
+/**
+*	\class BinaryTree
+*	\brief API for interacting with binary trees.
+*/
 
 template <typename T>
 class BinaryTree
 {
 public:
+
+	/**
+	*	\brief Defualt constructor
+	*/
+
 	BinaryTree() {
 		p_root = nullptr;
 		m_size = 0;
 	}
+
+	/**
+	*	\brief Adds a node to the tree.
+	*	\param n The TreeNode to add to the tree.
+	*	\return True if tree node was added to the tree.
+	*/
 
 	bool AddNode(TreeNode<T> * n) {
 		if (p_root == nullptr) {
@@ -169,17 +222,36 @@ public:
 		return false;
 	}
 
+	/**
+	*	\brief Finds a node with the given ID.
+	*	\param id The ID to find.
+	*	\return A pointer to the found node. Nullptr if the node wasn't found.
+	*/
+
 	TreeNode<T> * Search(const unsigned long long &id) {
 		return p_root->Search(id);
 	}
+
+	/**
+	*	\brief Vist each node on the tree. But don't do anything else.
+	*/
 
 	void Traverse() {
 		p_root->Vist();
 	}
 
+	/**
+	*	\brief Gets the current size of the tree.
+	*	\return The current number of nodes on the tree.
+	*/
+
 	size_t size() {
 		return m_size;
 	}
+
+	/**
+	*	\brief Distroys the tree. Does all the cleaning.
+	*/
 
 	void Empty() {
 		if (p_root != nullptr) {
@@ -188,6 +260,12 @@ public:
 			p_root = nullptr;
 		}
 	}
+
+	/**
+	*	\brief Removes a given node from the tree.
+	* \param id The ID of the node to remove.
+	*	\return True if the node was removed. Else its false;
+	*/
 
 	bool Remove(const unsigned long long &id) {
 		if (p_root == nullptr) {
@@ -222,8 +300,8 @@ public:
 
 
 private:
-	TreeNode<T> * p_root;
-	size_t m_size;
+	TreeNode<T> * p_root;	//!< The base of the tree.
+	size_t m_size;				//!< The current number of nodes in the tree.
 };
 
 
