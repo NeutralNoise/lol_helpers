@@ -13,6 +13,7 @@ For you lazy people here is the commands to compile the examples.
 * g++ Hash_main.cpp
 * g++ BinaryTree_main.cpp
 * g++ RandomNumber_main.cpp
+* g++ Distance_main.cpp
 
 ## Hash.h
 This has functions used to hash either a string or combine two numbers into a unique one.
@@ -25,6 +26,11 @@ This has a template structure in it allowing you to put what ever you want into
 ## RandomNum.h
 This is an Xorshift number generator. These are easy to make as there is a lot of
  code out there for them. This is pretty handy to have and it beats the c rand() :D.
+
+## Distance.h
+This contains two different distance functions. Manhattan Distance and Euclidean
+Distance. If you run the example you can see the difference. If you want to see
+why this happens have a read [here](https://lyfat.wordpress.com/2012/05/22/euclidean-vs-chebyshev-vs-manhattan-distance/).
 
 ## Todo
 Just some tasks that I would like to get around to doing one day.
