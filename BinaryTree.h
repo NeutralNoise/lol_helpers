@@ -2,6 +2,11 @@
 //2018
 #ifndef BINARY_TREE_H
 #define BINARY_TREE_H
+#include <assert.h>
+
+#ifdef __linux__
+#include <stddef.h> //size_t
+#endif
 
 /**
 * \file BinaryTree.h
@@ -33,12 +38,14 @@ struct TreeNode
 	*	\brief Creates a tree node with the given id
 	*	\param id The ID the node will have.
 	*/
-	TreeNode(const unsigned long long &id) {
+	TreeNode(const unsigned long long &id, T val = T()) {
 		this->id = id;
 		left = nullptr;
 		right = nullptr;
+		this->val = val;
 	}
 
+	int type = -1;
 	unsigned long long id; 	//! The ID of the node.
 	T val;									//! Data the node has of type T
 	TreeNode * left;				//! Node with an ID less than the parent node.
@@ -79,6 +86,7 @@ struct TreeNode
 	*/
 
 	TreeNode<T> * Search(const unsigned long long &id) {
+		//assert(this != nullptr);
 		if (this->id == id) {
 			return this;
 		}
@@ -165,7 +173,51 @@ struct TreeNode
 				return this;
 			}
 		}
-		return false;
+		return nullptr;
+	}
+
+	void CallOnVal(const unsigned long long &id, void (*callback)(const unsigned long long &, T*)) {
+		if (this->id == id) {
+			callback(id, &val);
+			return;
+		}
+		else if (id < this->id && left != nullptr) {
+			left->CallOnVal(id, callback);
+			return;
+		}
+		else if (id > this->id && right != nullptr) {
+			right->CallOnVal(id, callback);
+			return;
+		}
+	}
+
+	void CallOnVal(void(*callback)(const unsigned long long &, T*)) {
+		callback(this->id, &val);
+	}
+
+	void CallOnAllVal(void(*callback)(const unsigned long long &, T*)) {
+
+		callback(this->id, &val);
+
+		if (left != nullptr) {
+			left->CallOnAllVal(callback);
+		}
+
+		if(right != nullptr) {
+			right->CallOnAllVal(callback);
+		}
+	}
+
+	void CallOnTypeVal(const unsigned long long &type, void(*callback)(const unsigned long long &, T*)) {
+		if (type == this->type) {
+			this->CallOnVal(callback);
+		}
+		if (left != nullptr) {
+			left->CallOnTypeVal(type, callback);
+		}
+		if (right != nullptr) {
+			right->CallOnTypeVal(type, callback);
+		}
 	}
 
 	/**
@@ -229,7 +281,10 @@ public:
 	*/
 
 	TreeNode<T> * Search(const unsigned long long &id) {
-		return p_root->Search(id);
+		if (p_root) {
+			return p_root->Search(id);
+		}
+		return nullptr;
 	}
 
 	/**
@@ -297,6 +352,19 @@ public:
 		}
 	}
 
+	void CallOnVal(const unsigned long long &id, void(*callback)(const unsigned long long &, T*)) {
+		TreeNode<T> * node = this->Search(id);
+		node->CallOnVal(callback);
+	}
+
+	void CallOnAllVal(void(*callback)(const unsigned long long &, T*)) {
+
+		p_root->CallOnAllVal(callback);
+	}
+
+	void CallOnTypeVal(const unsigned long long &type, void(*callback)(const unsigned long long &, T*)) {
+
+	}
 
 
 private:
