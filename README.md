@@ -36,6 +36,5 @@ why this happens have a read [here](https://lyfat.wordpress.com/2012/05/22/eucli
 Just some tasks that I would like to get around to doing one day.
 
 1. Comment Hash.h with doxygen comments.
-2. Add tree balancing to BinaryTree.
-3. Look into BinaryTree stack overflow.
-4. Add some other things.
+2. Look into BinaryTree stack overflow.
+3. Add some other things.
