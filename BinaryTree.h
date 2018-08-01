@@ -3,9 +3,20 @@
 #ifndef BINARY_TREE_H
 #define BINARY_TREE_H
 #include <assert.h>
+#include <algorithm>
 
 #ifdef __linux__
 #include <stddef.h> //size_t
+#endif
+
+//Self balance code from.
+// I converted it to c++ from java.
+//https://github.com/williamfiset/data-structures/blob/master/com/williamfiset/datastructures/balancedtree/AVLTreeRecursive.java
+//Uncomment this when ever you want the rotates to be printed.
+//#define __BALANCE_TEST
+
+#ifdef __BALANCE_TEST
+#include <iostream>
 #endif
 
 /**
@@ -50,6 +61,8 @@ struct TreeNode
 	T val;									//! Data the node has of type T
 	TreeNode * left;				//! Node with an ID less than the parent node.
 	TreeNode * right;				//! Node with an ID greater than the parent node.
+	int bf; 								//!< The balance of the child nodes.
+	int height = 0;
 
 	/**
 	*	\brief Adds a node to the tree.
@@ -57,26 +70,34 @@ struct TreeNode
 	*	\return True if tree node was added to the tree.
 	*/
 
-	bool AddNode(TreeNode<T> * n) {
+	TreeNode<T> * AddNode(TreeNode<T> * n) {
 		if (n->id < id) {
 			if (left == nullptr) {
 				left = n;
-				return true;
+				Update(n);
+				return Balance(n);
 			}
 			else {
-				return left->AddNode(n);
+				left->AddNode(n);
+				Update(n);
+				return Balance(n);
 			}
+			return nullptr;
 		}
 		else if (n->id > id) {
 			if (right == nullptr) {
 				right = n;
-				return true;
+				Update(n);
+				return Balance(n);
 			}
 			else {
-				return right->AddNode(n);
-			}
+					right->AddNode(n);
+					Update(n);
+					return Balance(n);
+				}
+				return nullptr;
 		}
-		return false;
+		return nullptr;
 	}
 
 	/**
@@ -231,6 +252,87 @@ struct TreeNode
 		else
 			return left->MinValue();
 	}
+private:
+	void Update(TreeNode<T> *  node) {
+		int leftNodeHeight  = (node->left  == nullptr) ? -1 : node->left->height;
+		int rightNodeHeight = (node->right == nullptr) ? -1 : node->right->height;
+
+		// Update this node's height.
+		node->height = 1 + std::max(leftNodeHeight, rightNodeHeight);
+
+		node->bf = rightNodeHeight - leftNodeHeight;
+
+		#ifdef __BALANCE_TEST
+		std::cout << "Update(): " << node->bf << '\n';
+		#endif
+	}
+
+	TreeNode<T> * Balance(TreeNode<T> *  node) {
+
+		if(node->bf == -2) {
+			if(node->left->bf <= 0) {
+				return leftLeftCase(node);
+			}
+			else {
+				return leftRightCase(node);
+			}
+		}
+		else if(node->bf == 2) {
+
+			if(node->right->bf >= 0) {
+				return rightRightCase(node);
+			}
+			else {
+				return rightLeftCase(node);
+			}
+		}
+		return node;
+	}
+
+	TreeNode<T> * RotateLeft(TreeNode<T> *  node) {
+		//This will be returned and be the right node. its ok i know what it does.
+		TreeNode<T> * newPerent = node->right;
+		node->right = newPerent->left;
+		newPerent->left = node;
+		Update(node);
+		Update(newPerent);
+		#ifdef __BALANCE_TEST
+		std::cout << "RotateLeft()\n";
+		#endif
+		return newPerent;
+	}
+
+	TreeNode<T> * RotateRight(TreeNode<T> *  node) {
+		//This will be returned and be the right node. its ok i know what it does.
+		TreeNode<T> * newPerent = node->left;
+		node->left = newPerent->right;
+		newPerent->right = this;
+		Update(node);
+		Update(newPerent);
+		#ifdef __BALANCE_TEST
+		std::cout << "RotateRight()\n";
+		#endif
+		return newPerent;
+	}
+
+	TreeNode<T> * rightLeftCase(TreeNode<T> * node) {
+    node->right = RotateRight(node->right);
+    return rightRightCase(node);
+  }
+
+	TreeNode<T> * rightRightCase(TreeNode<T> * node) {
+    return RotateLeft(node);
+  }
+
+	TreeNode<T> * leftRightCase(TreeNode<T> * node) {
+    node->left = RotateLeft(node->left);
+    return leftLeftCase(node);
+  }
+
+	TreeNode<T> * leftLeftCase(TreeNode<T> * node) {
+	    return RotateRight(node);
+	  }
+
 };
 
 /**
@@ -262,10 +364,14 @@ public:
 		if (p_root == nullptr) {
 			p_root = n;
 			m_size++;
+			//Don't need these. THis is the first update.
+			//p_root->Update();
+			//p_root->Balance();
 			return true;
 		}
 		else {
-			bool added = p_root->AddNode(n);
+			bool added = false;
+			added = p_root->AddNode(n);
 			if (added) {
 				m_size++;
 			}
@@ -363,7 +469,7 @@ public:
 	}
 
 	void CallOnTypeVal(const unsigned long long &type, void(*callback)(const unsigned long long &, T*)) {
-
+		p_root->CallOnTypeVal(type, callback);
 	}
 
 
