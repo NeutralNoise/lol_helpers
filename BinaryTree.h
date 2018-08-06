@@ -47,6 +47,7 @@ struct TreeNode
 	TreeNode() {
 		left = nullptr;
 		right = nullptr;
+		perent = nullptr;
 	}
 
 	/**
@@ -58,6 +59,7 @@ struct TreeNode
 		left = nullptr;
 		right = nullptr;
 		this->val = val;
+		perent = nullptr;
 	}
 
 	int type = -1;
@@ -67,7 +69,7 @@ struct TreeNode
 	TreeNode * right;				//! Node with an ID greater than the parent node.
 	int bf; 								//!< The balance of the child nodes.
 	int height = 0;
-	TreeNode * perent = nullptr;
+	TreeNode * perent;
 
 	/**
 	*	\brief Adds a node to the tree.
@@ -157,13 +159,14 @@ struct TreeNode
 	*/
 
 	void Clean() {
+		/*
 		if (left != nullptr) {
 			left->Clean();
 		}
 		if (right != nullptr) {
 			right->Clean();
 		}
-
+		*/
 		if (left != nullptr) {
 			delete left;
 			left = nullptr;
@@ -536,9 +539,39 @@ public:
 
 	void Empty() {
 		if (p_root != nullptr) {
+			/*
 			p_root->Clean();
 			delete p_root;
 			p_root = nullptr;
+			*/
+			TreeNode<T> * node = p_root;
+			while (p_root) {
+				if (node->left) {
+					node = node->left;
+				}
+				else if (node->right) {
+					node = node->right;
+				}
+				else if (node->left == nullptr && node->right == nullptr) {
+					if (node->perent != nullptr) {
+						TreeNode<T> * perent = node->perent;
+						if (perent->left == node) {
+							delete perent->left;
+							perent->left = nullptr;
+							node = perent;
+						}
+						else {
+							delete perent->right;
+							perent->right = nullptr;
+							node = perent;
+						}
+					}
+					else {
+						delete p_root;
+						p_root = nullptr;
+					}
+				}
+			}
 		}
 	}
 
