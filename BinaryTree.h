@@ -19,6 +19,10 @@
 #include <iostream>
 #endif
 
+#define __BENCHMARK_LOOP_ADD
+#define __BENCHMARK_LOOP_SEARCH
+
+
 /**
 * \file BinaryTree.h
 * \version 1.0
@@ -63,6 +67,7 @@ struct TreeNode
 	TreeNode * right;				//! Node with an ID greater than the parent node.
 	int bf; 								//!< The balance of the child nodes.
 	int height = 0;
+	TreeNode * perent = nullptr;
 
 	/**
 	*	\brief Adds a node to the tree.
@@ -71,31 +76,44 @@ struct TreeNode
 	*/
 
 	TreeNode<T> * AddNode(TreeNode<T> * n) {
+
 		if (n->id < id) {
 			if (left == nullptr) {
+				n->perent = this;
 				left = n;
-				Update(n);
-				return Balance(n);
+				//Update(n);
+				Update(this);
+				if (perent != nullptr) {
+					Update(perent);
+					return Balance(perent);
+				}
+				//return Balance(n);
+				return Balance(this);
 			}
 			else {
 				left->AddNode(n);
-				Update(n);
-				return Balance(n);
+				return this;
 			}
 			return nullptr;
 		}
 		else if (n->id > id) {
 			if (right == nullptr) {
+				n->perent = this;
 				right = n;
-				Update(n);
-				return Balance(n);
+				//Update(n);
+				Update(this);
+				if (perent != nullptr) {
+					Update(perent);
+					return Balance(perent);
+				}
+				//return Balance(n);
+				return Balance(this);
 			}
 			else {
-					right->AddNode(n);
-					Update(n);
-					return Balance(n);
-				}
-				return nullptr;
+				right->AddNode(n);
+				return this;
+			}
+			return nullptr;
 		}
 		return nullptr;
 	}
@@ -263,7 +281,7 @@ private:
 		node->bf = rightNodeHeight - leftNodeHeight;
 
 		#ifdef __BALANCE_TEST
-		std::cout << "Update(): " << node->bf << '\n';
+		// std::cout << "Update(): " << node->bf << '\n';
 		#endif
 	}
 
@@ -292,8 +310,13 @@ private:
 	TreeNode<T> * RotateLeft(TreeNode<T> *  node) {
 		//This will be returned and be the right node. its ok i know what it does.
 		TreeNode<T> * newPerent = node->right;
+		if (node->perent != nullptr) {
+			node->perent->right = newPerent;
+		}
 		node->right = newPerent->left;
 		newPerent->left = node;
+		newPerent->perent = node->perent;
+		node->perent = newPerent;
 		Update(node);
 		Update(newPerent);
 		#ifdef __BALANCE_TEST
@@ -305,8 +328,13 @@ private:
 	TreeNode<T> * RotateRight(TreeNode<T> *  node) {
 		//This will be returned and be the right node. its ok i know what it does.
 		TreeNode<T> * newPerent = node->left;
+		if (node->perent != nullptr) {
+			node->perent->left = newPerent;
+		}
 		node->left = newPerent->right;
 		newPerent->right = this;
+		newPerent->perent = node->perent;
+		node->perent = newPerent;
 		Update(node);
 		Update(newPerent);
 		#ifdef __BALANCE_TEST
@@ -361,6 +389,7 @@ public:
 	*/
 
 	bool AddNode(TreeNode<T> * n) {
+
 		if (p_root == nullptr) {
 			p_root = n;
 			m_size++;
@@ -370,12 +399,65 @@ public:
 			return true;
 		}
 		else {
+			#ifdef __BENCHMARK_LOOP_ADD
+			TreeNode<T> * node = p_root;
+			while(true) {
+				if(n->id == node->id) {
+					return false;
+				}
+				else if(n->id < node->id) {
+					if(node->left != nullptr) {
+						node = node->left;
+					}
+					else {
+						//bool added = false;
+						//added = node->AddNode(n);
+						//node->left = n;
+						if (node->AddNode(n)) {
+							//Roots perent must always be nullptr
+							if (p_root->perent != nullptr) {
+								while (p_root->perent != nullptr) {
+									p_root = p_root->perent;
+								}
+							}
+							m_size++;
+							return true;
+						}
+						return false;
+					}
+				}
+				else if(n->id > node->id) {
+					if(node->right != nullptr) {
+						node = node->right;
+					}
+					else {
+						//bool added = false;
+						//added = node->AddNode(n);
+						//node->right = n;
+						if (node->AddNode(n)) {
+							//Roots perent must always be nullptr
+							if (p_root->perent != nullptr) {
+								while (p_root->perent != nullptr) {
+									p_root = p_root->perent;
+								}
+							}
+							m_size++;
+							return true;
+						}
+						return false;
+					}
+				}
+			}
+
+			#else
+
 			bool added = false;
 			added = p_root->AddNode(n);
 			if (added) {
 				m_size++;
 			}
 			return added;
+			#endif // __BENCHMARK_LOOP_ADD
 		}
 		return false;
 	}
@@ -387,8 +469,46 @@ public:
 	*/
 
 	TreeNode<T> * Search(const unsigned long long &id) {
+
+		#ifdef __BALANCE_TEST
+		std::cout << "Searching for: " << id << '\n';
+		#endif
 		if (p_root) {
+			#ifdef __BENCHMARK_LOOP_SEARCH
+
+			TreeNode<T> * node = p_root;
+			while(true) {
+				if (id == node->id) {
+					return node;
+				}
+				else if (id < node->id) {
+					if (node->left != nullptr) {
+						//Check if the left has the right id.
+						node = node->left;
+					}
+					else {
+						return nullptr;
+					}
+				}
+				else if (id > node->id){
+					if (node->right != nullptr) {
+						//Check if the left has the right id.
+						node = node->right;
+					}
+					else {
+						return nullptr;
+					}
+				}
+				/*
+				if(node->right == nullptr && node->left == nullptr) {
+					return nullptr;
+				}
+				*/
+			}
+
+			#else
 			return p_root->Search(id);
+			#endif //__BENCHMARK_LOOP
 		}
 		return nullptr;
 	}
