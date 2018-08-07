@@ -67,9 +67,9 @@ struct TreeNode
 	T val;									//! Data the node has of type T
 	TreeNode * left;				//! Node with an ID less than the parent node.
 	TreeNode * right;				//! Node with an ID greater than the parent node.
-	int bf; 								//!< The balance of the child nodes.
-	int height = 0;
-	TreeNode * perent;
+	int bf; 								//!< The balance of the child nodes. Used for balancing
+	int height = 0;					//!< The height of this node. Used for balancing
+	TreeNode * perent;			//!< The perent node of this node.
 
 	/**
 	*	\brief Adds a node to the tree.
@@ -89,7 +89,6 @@ struct TreeNode
 					Update(perent);
 					return Balance(perent);
 				}
-				//return Balance(n);
 				return Balance(this);
 			}
 			else {
@@ -102,13 +101,11 @@ struct TreeNode
 			if (right == nullptr) {
 				n->perent = this;
 				right = n;
-				//Update(n);
 				Update(this);
 				if (perent != nullptr) {
 					Update(perent);
 					return Balance(perent);
 				}
-				//return Balance(n);
 				return Balance(this);
 			}
 			else {
@@ -159,14 +156,6 @@ struct TreeNode
 	*/
 
 	void Clean() {
-		/*
-		if (left != nullptr) {
-			left->Clean();
-		}
-		if (right != nullptr) {
-			right->Clean();
-		}
-		*/
 		if (left != nullptr) {
 			delete left;
 			left = nullptr;
@@ -218,6 +207,12 @@ struct TreeNode
 		return nullptr;
 	}
 
+	/**
+	*	\brief Call a function on a nodes value.
+	*	\param id The ID of the node to to call the function on.
+	*	\param callback Function that will be called on the nodes value.
+	*/
+
 	void CallOnVal(const unsigned long long &id, void (*callback)(const unsigned long long &, T*)) {
 		if (this->id == id) {
 			callback(id, &val);
@@ -233,9 +228,19 @@ struct TreeNode
 		}
 	}
 
+	/**
+	*	\brief Call a function on a nodes value.
+	*	\param callback Function that will be called on the nodes value.
+	*/
+
 	void CallOnVal(void(*callback)(const unsigned long long &, T*)) {
 		callback(this->id, &val);
 	}
+
+	/**
+	*	\brief Call a function on all the nodes in the tree.
+	*	\param callback Function that will be called on the nodes value.
+	*/
 
 	void CallOnAllVal(void(*callback)(const unsigned long long &, T*)) {
 
@@ -249,6 +254,12 @@ struct TreeNode
 			right->CallOnAllVal(callback);
 		}
 	}
+
+	/**
+	*	\brief Call a function on a node of a given type.
+	*	\param type The type of node to call the function on.
+	*	\param callback Function that will be called on the nodes value.
+	*/
 
 	void CallOnTypeVal(const unsigned long long &type, void(*callback)(const unsigned long long &, T*)) {
 		if (type == this->type) {
@@ -274,6 +285,12 @@ struct TreeNode
 			return left->MinValue();
 	}
 private:
+
+	/**
+	*	\brief Update a nodes balance factor and height.
+	*	\param node The node to update.
+	*/
+
 	void Update(TreeNode<T> *  node) {
 		int leftNodeHeight  = (node->left  == nullptr) ? -1 : node->left->height;
 		int rightNodeHeight = (node->right == nullptr) ? -1 : node->right->height;
@@ -287,6 +304,11 @@ private:
 		// std::cout << "Update(): " << node->bf << '\n';
 		#endif
 	}
+
+	/**
+	*	\brief Balance a given node.
+	*	\param node The node to balance.
+	*/
 
 	TreeNode<T> * Balance(TreeNode<T> *  node) {
 
@@ -310,6 +332,12 @@ private:
 		return node;
 	}
 
+	/**
+	*	\brief Rotate a node to the left.
+	*	\param node The node to rotate.
+	* \return A pointer to the new perent node.
+	*/
+
 	TreeNode<T> * RotateLeft(TreeNode<T> *  node) {
 		//This will be returned and be the right node. its ok i know what it does.
 		TreeNode<T> * newPerent = node->right;
@@ -322,11 +350,14 @@ private:
 		node->perent = newPerent;
 		Update(node);
 		Update(newPerent);
-		#ifdef __BALANCE_TEST
-		std::cout << "RotateLeft()\n";
-		#endif
 		return newPerent;
 	}
+
+	/**
+	*	\brief Rotate a node to the right.
+	*	\param node The node to rotate.
+	* \return A pointer to the new perent node.
+	*/
 
 	TreeNode<T> * RotateRight(TreeNode<T> *  node) {
 		//This will be returned and be the right node. its ok i know what it does.
@@ -340,25 +371,46 @@ private:
 		node->perent = newPerent;
 		Update(node);
 		Update(newPerent);
-		#ifdef __BALANCE_TEST
-		std::cout << "RotateRight()\n";
-		#endif
 		return newPerent;
 	}
+
+	/**
+	*	\brief Rotate a node to the right then one to the left.
+	*	\param node The node to rotate.
+	* \return A pointer to the new perent node.
+	*/
 
 	TreeNode<T> * rightLeftCase(TreeNode<T> * node) {
     node->right = RotateRight(node->right);
     return rightRightCase(node);
   }
 
+	/**
+	*	\brief Rotate a node to the left.
+	*	\param node The node to rotate.
+	* \return A pointer to the new perent node.
+	*/
+
 	TreeNode<T> * rightRightCase(TreeNode<T> * node) {
     return RotateLeft(node);
   }
+
+	/**
+	*	\brief Rotate a node to the left then another one to the right
+	*	\param node The node to rotate.
+	* \return A pointer to the new perent node.
+	*/
 
 	TreeNode<T> * leftRightCase(TreeNode<T> * node) {
     node->left = RotateLeft(node->left);
     return leftLeftCase(node);
   }
+
+	/**
+	*	\brief Rotate a node to the right.
+	*	\param node The node to rotate.
+	* \return A pointer to the new perent node.
+	*/
 
 	TreeNode<T> * leftLeftCase(TreeNode<T> * node) {
 	    return RotateRight(node);
@@ -502,11 +554,6 @@ public:
 						return nullptr;
 					}
 				}
-				/*
-				if(node->right == nullptr && node->left == nullptr) {
-					return nullptr;
-				}
-				*/
 			}
 
 			#else
@@ -611,15 +658,32 @@ public:
 		}
 	}
 
+	/**
+	*	\brief Call a function on a nodes value.
+	*	\param id The ID of the node to to call the function on.
+	*	\param callback Function that will be called on the nodes value.
+	*/
+
 	void CallOnVal(const unsigned long long &id, void(*callback)(const unsigned long long &, T*)) {
 		TreeNode<T> * node = this->Search(id);
 		node->CallOnVal(callback);
 	}
 
+	/**
+	*	\brief Call a function on all the nodes in the tree.
+	*	\param callback Function that will be called on the nodes value.
+	*/
+
 	void CallOnAllVal(void(*callback)(const unsigned long long &, T*)) {
 
 		p_root->CallOnAllVal(callback);
 	}
+
+	/**
+	*	\brief Call a function on a node of a given type.
+	*	\param type The type of node to call the function on.
+	*	\param callback Function that will be called on the nodes value.
+	*/
 
 	void CallOnTypeVal(const unsigned long long &type, void(*callback)(const unsigned long long &, T*)) {
 		p_root->CallOnTypeVal(type, callback);
