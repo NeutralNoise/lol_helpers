@@ -20,8 +20,7 @@ This has functions used to hash either a string or combine two numbers into a un
 
 ## BinaryTree.h
 This has a template structure in it allowing you to put what ever you want into
- a binary search tree. The only real issue with it is that a stack overflow
-  happens when the number of elements gets to ~4000.
+ a binary search tree. The CallOnVal functions are likely to stack overflow.
 
 ## RandomNum.h
 This is an Xorshift number generator. These are easy to make as there is a lot of
@@ -36,5 +35,5 @@ why this happens have a read [here](https://lyfat.wordpress.com/2012/05/22/eucli
 Just some tasks that I would like to get around to doing one day.
 
 1. Comment Hash.h with doxygen comments.
-2. Look into BinaryTree stack overflow.
+2. Look into BinaryTree stack overflow. (This is mostly done.)
 3. Add some other things.
