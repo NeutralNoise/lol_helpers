@@ -31,9 +31,24 @@ This contains two different distance functions. Manhattan Distance and Euclidean
 Distance. If you run the example you can see the difference. If you want to see
 why this happens have a read [here](https://lyfat.wordpress.com/2012/05/22/euclidean-vs-chebyshev-vs-manhattan-distance/).
 
+## ByteSwap.h
+This is a replacement for the functions used to change endianness. This should just be a drop in replacement for these functions `htons(); htonl(); ntohs(), ntohl`.
+
+## ObjectLoader.h
+Used to load dll/so objects and get functions from them.
+
+Note: This might change name at a later data.
+
+## ObjectLoadingHelpers.h
+A simple wrapper around windows/linux functions used to load and get functions from dll/so objects.
+This is used in ObjectLoader.h. Calls to these functions shouldn't need to be made.
+
+## OSDefines.h
+Conatins checks for pre defined things for easy checking if Windows, Linux or Cygwin. Is used ObjectloaderHelpers.h
+
 ## Todo
 Just some tasks that I would like to get around to doing one day.
 
-1. Comment Hash.h with doxygen comments.
-2. Look into BinaryTree stack overflow. (This is mostly done.)
-3. Add some other things.
+1. Comment ObjectLoader.h, ObjectloaderHelpers.h and ByteSwap.h with doxygen comments.
+2. Reworkd BinaryTree to be more flexible.
+3. Create examples for ObjectLoader.h, ObjectloaderHelpers.h and ByteSwap.h.
