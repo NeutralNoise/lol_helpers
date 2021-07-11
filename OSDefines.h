@@ -4,7 +4,7 @@
 #define OS_DEFINES_H_INCLUDED
 
 #define USE_ERROR_MANAGER //Use the built in error manager
-//Build Information
+//Build OS information
 #if defined(_WIN32) || defined(_WIN64)
 #define WIN_BUILD
 #if defined(_WIN64)
@@ -32,5 +32,30 @@
 #define CYG32_BUILD
 #endif
 #endif
+
+//Function name macro. Like __FILE__ __LINE__
+//Function name
+#if defined(WIN_BUILD)
+#ifndef __FUNCTION_NAME__
+#define __FUNCTION_NAME__   __FUNCTION__
+#ifndef __func__ //Might want this.
+#define __func__ __FUNCTION__
+#endif //!__func__
+#endif //!__FUNCTION_NAME__
+#elif defined(LIN_BUILD)
+#ifndef __FUNCTION_NAME__
+#define __FUNCTION_NAME__   __func__
+#endif //!__FUNCTION_NAME__
+#endif
+
+// DLL/SO loading
+//This is so we export the symbols for functions. This is only needed on windows platforms.
+#ifdef WIN_BUILD
+#define LOADABLELIB_API __declspec(dllexport)
+#elif defined(LIN_BUILD)
+#define LOADABLELIB_API
+#endif
+
+
 
 #endif //OS_DEFINES_H_INCLUDED
