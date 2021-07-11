@@ -40,7 +40,7 @@ inline LibInstance LoadLibObject(const char* path) {
 		//We only have to do this if we are using UNICODE
 		std::wstring wstr = s2ws(path);
 		LPCWSTR wpath = wstr.c_str();
-		p_ProcID = LoadLibrary(wpath);
+		instance = LoadLibrary(wpath);
 	#else
 		instance = LoadLibrary(path);
 	#endif //UNICODE
