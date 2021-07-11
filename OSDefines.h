@@ -3,7 +3,7 @@
 #ifndef OS_DEFINES_H_INCLUDED
 #define OS_DEFINES_H_INCLUDED
 
-#define USE_ERROR_MANAGER //Use the built in error manager
+//#define USE_ERROR_MANAGER //Use the built in error manager (NOTE:) Is this really need? I'm thinking no.
 //Build OS information
 #if defined(_WIN32) || defined(_WIN64)
 #define WIN_BUILD
