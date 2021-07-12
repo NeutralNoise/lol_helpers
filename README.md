@@ -47,8 +47,5 @@ This is used in ObjectLoader.h. Calls to these functions shouldn't need to be ma
 Conatins checks for pre defined things for easy checking if Windows, Linux or Cygwin. Is used ObjectloaderHelpers.h
 
 ## Todo
-Just some tasks that I would like to get around to doing one day.
+See [TODO.md](TODO.md)
 
-1. Comment ObjectLoader.h, ObjectloaderHelpers.h and ByteSwap.h with doxygen comments.
-2. Reworkd BinaryTree to be more flexible.
-3. Create examples for ObjectLoader.h, ObjectloaderHelpers.h and ByteSwap.h.
